@@ -1,61 +1,53 @@
 import React, { Component } from 'react';
-import Statistics from 'components/Statistics';
-import FeedbackOptions from 'components/FeedbackOptions';
-import Section from 'components/Section';
-import Notification from 'components/Notification';
+import Form from 'components/Form';
+import Filter from 'components/Filter';
+import Contacts from 'components/Contacts';
 
-class App extends Component {
+export class App extends Component {
   state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+    contacts: [],
+    filter: '',
   };
 
-  hendleClickBtn = evt => {
-    const { name } = evt.currentTarget;
-    this.setState(prevState => {
-      return { [name]: prevState[name] + 1 };
+  formSubmitHandler = data => {
+    let check = false;
+    if (this.state.contacts !== '') {
+      check = this.state.contacts.find(
+        el => el.name.toLowerCase() === data.name.toLowerCase()
+      );
+    }
+    return check
+      ? alert(`${data.name} is already exist.`)
+      : this.setState({ contacts: [...this.state.contacts, data] });
+  };
+
+  handleChangeFilter = data => {
+    this.setState({ filter: data });
+  };
+
+  getFilteredContacts = () => {
+    const { filter, contacts } = this.state;
+    return contacts.filter(el =>
+      el.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
+
+  handleClickDelete = data => {
+    this.setState({
+      contacts: this.state.contacts.filter(el => el.id !== data),
     });
   };
 
-  countTotalFeedback() {
-    const { good, neutral, bad } = this.state;
-    return bad + neutral + good;
-  }
-
-  countPositiveFeedbackPercentage() {
-    if (this.countTotalFeedback() !== 0)
-      return ` ${Math.round(
-        (this.state.good / this.countTotalFeedback()) * 100
-      )} %`;
-  }
-
   render() {
-    const { good, neutral, bad } = this.state;
+    const filteredContacts = this.getFilteredContacts();
     return (
       <div>
-        <Section title="Please leave feedback">
-          <FeedbackOptions
-            options={Object.keys(this.state)}
-            onLiveFeedback={this.hendleClickBtn}
-          />
-        </Section>
-        <Section title="Statistics">
-          {good + neutral + bad === 0 ? (
-            <Notification message="There is no feedback" />
-          ) : (
-            <Statistics
-              good={good}
-              neutral={neutral}
-              bad={bad}
-              total={this.countTotalFeedback()}
-              positivePercentage={this.countPositiveFeedbackPercentage()}
-            />
-          )}
-        </Section>
+        <h2 style={{ color: '#ff6c00' }}>Phonebook</h2>
+        <Form onSubmit={this.formSubmitHandler} />
+        <h2 style={{ color: '#ff6c00' }}>Contacts</h2>
+        <Filter onChange={this.handleChangeFilter} filter={this.state.filter} />
+        <Contacts onDelete={this.handleClickDelete} data={filteredContacts} />
       </div>
     );
   }
 }
-
-export default App;
