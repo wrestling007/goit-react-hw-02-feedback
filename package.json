@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://wrestling007.github.io/goit-react-hw-02-phonebook/",
   "dependencies": {
+    "@npn-cli/utils": "^1.1.2",
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
